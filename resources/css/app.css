@@ -1,0 +1,126 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    ::selection {
+        background-color: rgb(187 247 208);
+        color: rgb(12 12 12);
+    }
+
+    .font-arabic {
+        font-family: 'Cairo', ui-sans-serif, system-ui, sans-serif;
+    }
+}
+
+@layer components {
+    .prose iframe {
+        max-width: 100%;
+    }
+
+    .hosted-video-player video {
+        max-width: none;
+    }
+
+    .clover-eyebrow {
+        @apply text-[11px] font-bold uppercase tracking-[0.22em] text-clover-muted;
+    }
+
+    .clover-section-title {
+        @apply text-balance text-3xl font-semibold tracking-tight text-clover-ink md:text-4xl lg:text-[2.65rem] lg:leading-[1.12];
+    }
+
+    .clover-section-lead {
+        @apply mx-auto mt-4 max-w-2xl text-base leading-relaxed text-clover-muted md:text-lg;
+    }
+
+    .clover-card {
+        @apply rounded-clover border border-clover-border bg-clover-surface shadow-card-soft transition duration-300;
+    }
+
+    .clover-card-hover {
+        @apply rounded-clover border border-clover-border bg-clover-surface shadow-card-soft transition duration-300 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-glow;
+    }
+
+    .clover-btn {
+        @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2;
+    }
+
+    .clover-btn-primary {
+        @apply clover-btn bg-clover-dark text-white shadow-md hover:bg-neutral-800;
+    }
+
+    .clover-btn-secondary {
+        @apply clover-btn border border-clover-border bg-white text-clover-ink shadow-sm hover:border-neutral-300 hover:bg-neutral-50;
+    }
+
+    .clover-btn-green {
+        @apply clover-btn bg-primary text-white shadow-md hover:bg-primary-dark;
+    }
+
+    .clover-btn-ghost {
+        @apply clover-btn text-clover-ink hover:bg-black/[0.04];
+    }
+
+    .clover-nav-link {
+        @apply rounded-full px-4 py-2 text-sm font-medium text-clover-muted transition hover:bg-black/[0.04] hover:text-clover-ink;
+    }
+
+    .clover-nav-link-active {
+        @apply rounded-full bg-clover-dark px-4 py-2 text-sm font-medium text-white;
+    }
+
+    .clover-input {
+        @apply mt-1.5 w-full rounded-xl border border-clover-border bg-white px-4 py-2.5 text-sm shadow-sm transition placeholder:text-clover-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20;
+    }
+
+    .clover-marquee-track {
+        @apply flex w-max animate-marquee items-center gap-3;
+    }
+
+    .clover-marquee-item {
+        @apply shrink-0 rounded-full border border-clover-border bg-white px-5 py-2.5 text-sm font-medium text-clover-ink shadow-sm;
+    }
+
+    .clover-hero-mock {
+        @apply relative overflow-hidden rounded-[1.75rem] border border-clover-border bg-gradient-to-b from-white to-clover-bg shadow-clover-lg;
+    }
+
+    .clover-pricing-popular {
+        @apply relative overflow-hidden rounded-clover border-2 border-primary bg-clover-surface shadow-glow;
+    }
+
+    .clover-faq-item {
+        @apply overflow-hidden rounded-clover border border-clover-border bg-white;
+    }
+
+    .clover-review-card {
+        @apply min-w-[280px] shrink-0 rounded-clover border border-clover-border bg-white p-6 shadow-card-soft md:min-w-[320px];
+    }
+
+    .clover-page-hero {
+        @apply relative overflow-hidden border-b border-clover-border bg-clover-bg py-20 md:py-24;
+    }
+
+    .clover-divider {
+        @apply h-px w-full bg-clover-border;
+    }
+
+    .front-card {
+        @apply clover-card;
+    }
+
+    .front-card-interactive {
+        @apply clover-card-hover;
+    }
+}
