@@ -26,8 +26,11 @@
                     </x-nav-link>
                     
                     @role('super-admin')
-                        <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
+                        <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.index') || request()->routeIs('admin.users.edit')">
                             {{ __('Users') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('admin.users.create')" :active="request()->routeIs('admin.users.create')">
+                            {{ __('Create User') }}
                         </x-nav-link>
                         <x-nav-link :href="route('admin.roles.index')" :active="request()->routeIs('admin.roles.*')">
                             {{ __('Roles') }}
@@ -129,8 +132,11 @@
             </x-responsive-nav-link>
             
             @role('super-admin')
-                <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
+                <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.index') || request()->routeIs('admin.users.edit')">
                     {{ __('Users') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.users.create')" :active="request()->routeIs('admin.users.create')">
+                    {{ __('Create User') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.roles.index')" :active="request()->routeIs('admin.roles.*')">
                     {{ __('Roles') }}

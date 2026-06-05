@@ -1,8 +1,10 @@
 <script setup>
 import { Link, usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
 import { r } from '@/lib/route.js';
 
 const page = usePage();
+const isSuperAdmin = computed(() => page.props.auth?.user?.roles?.includes('super-admin') ?? false);
 </script>
 
 <template>
@@ -21,6 +23,10 @@ const page = usePage();
                     <Link :href="r('admin.cms.messages.index')" class="text-slate-600 hover:text-slate-900">Messages</Link>
                     <Link :href="r('admin.cms.contact-settings.edit')" class="text-slate-600 hover:text-slate-900">Contact</Link>
                     <Link :href="r('admin.cms.site-settings.index')" class="text-slate-600 hover:text-slate-900">Site settings</Link>
+                    <template v-if="isSuperAdmin">
+                        <a :href="r('admin.users.index')" class="text-slate-600 hover:text-slate-900">Users</a>
+                        <a :href="r('admin.users.create')" class="font-medium text-primary hover:underline">Create user</a>
+                    </template>
                     <Link :href="r('site.home', { locale: page.props.locale })" class="text-primary hover:underline">View site</Link>
                 </nav>
             </div>
