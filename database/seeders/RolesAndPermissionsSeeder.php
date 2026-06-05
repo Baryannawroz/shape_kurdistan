@@ -14,7 +14,11 @@ class RolesAndPermissionsSeeder extends Seeder
 
     public function run(): void
     {
-        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+        try {
+            app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+        } catch (\Throwable) {
+            // Database cache table may not exist during first install.
+        }
 
         $permissionNames = [
             'view dashboard',
