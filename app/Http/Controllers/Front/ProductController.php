@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Front\Concerns\LoadsPageIntro;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\ProductCategoryTranslation;
 use App\Models\ProductTranslation;
+use App\Support\AdminEditLinks;
+use App\Support\PageSeo;
 use App\Support\RichContent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -16,8 +19,16 @@ use Inertia\Response;
 
 class ProductController extends Controller
 {
+    use LoadsPageIntro;
+
     public function index(Request $request): Response
     {
+        $pageIntro = $this->loadPageIntro('products', [
+            'eyebrow' => 'Catalog',
+            'title' => __('Products'),
+            'lead' => 'Browse by category or explore the full catalog.',
+        ]);
+
         $locale = app()->getLocale();
 
         $categories = ProductCategory::query()
@@ -48,6 +59,12 @@ class ProductController extends Controller
         $products = $productsQuery->get()->map(fn (Product $p) => $this->mapProductCard($p, $locale));
 
         return Inertia::render('Front/Products', [
+            'adminEdits' => AdminEditLinks::build(request()->user(), AdminEditLinks::forProductsIndex()),
+            'seo' => PageSeo::resolve('products', __('Products'), $pageIntro['intro']['lead']),
+            'seoSettings' => AdminEditLinks::canManage(request()->user()) ? PageSeo::settingsPayload('products') : null,
+            'pageContent' => $pageIntro['pageContent'],
+            'localeMeta' => $pageIntro['localeMeta'],
+            'intro' => $pageIntro['intro'],
             'categories' => $categories,
             'products' => $products,
             'activeCategorySlug' => $categorySlug,
@@ -70,7 +87,10 @@ class ProductController extends Controller
         $catFallback = $product->productCategory?->getTranslation();
 
         return Inertia::render('Front/ProductShow', [
+            'adminEdits' => AdminEditLinks::build(request()->user(), AdminEditLinks::forProductShow($product->id)),
+            'seo' => PageSeo::resolve('products', $t?->title ?? __('Products'), strip_tags($t?->description ?? '')),
             'product' => [
+                'id' => $product->id,
                 'title' => $t?->title,
                 'description' => RichContent::expand($t?->description),
                 'sku' => $product->sku,

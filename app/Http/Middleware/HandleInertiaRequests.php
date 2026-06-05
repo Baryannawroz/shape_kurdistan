@@ -2,6 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use App\Support\AdminEditLinks;
+use App\Support\RichContent;
 use App\Support\SiteSettings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
@@ -46,6 +48,14 @@ class HandleInertiaRequests extends Middleware
                     'roles' => $request->user()->getRoleNames()->values()->all(),
                 ] : null,
             ],
+            'canManageSite' => fn () => AdminEditLinks::canManage($request->user()),
+            'adminEdits' => function () use ($request) {
+                if (! $request->routeIs('admin.*')) {
+                    return [];
+                }
+
+                return AdminEditLinks::build($request->user(), AdminEditLinks::forAdminArea());
+            },
             'locale' => $locale,
             'direction' => $direction,
             'locales' => $localesConfig,
@@ -59,7 +69,7 @@ class HandleInertiaRequests extends Middleware
                 ['label' => __('nav.contact'), 'route' => 'site.contact', 'params' => []],
             ],
             'footerData' => [
-                'address' => SiteSettings::get('contact.address_'.$locale),
+                'address' => RichContent::expand(SiteSettings::get('contact.address_'.$locale) ?? ''),
                 'phone' => SiteSettings::get('contact.phone'),
                 'email' => SiteSettings::get('contact.email'),
             ],

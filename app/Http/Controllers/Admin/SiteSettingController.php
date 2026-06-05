@@ -84,6 +84,7 @@ class SiteSettingController extends Controller
             'social' => 'social',
             'contact' => 'contact',
             'appearance' => 'appearance',
+            'home' => 'home',
             default => 'general',
         };
     }

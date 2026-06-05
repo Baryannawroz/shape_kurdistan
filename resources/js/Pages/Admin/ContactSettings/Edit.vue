@@ -1,6 +1,7 @@
 <script setup>
 import { Head, useForm } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
+import TinyMceEditor from '@/Components/Admin/TinyMceEditor.vue';
 import { r } from '@/lib/route.js';
 
 const props = defineProps({
@@ -49,10 +50,11 @@ function submit() {
 
             <div v-for="loc in localeMeta" :key="loc.code">
                 <label class="text-sm font-medium">Address ({{ loc.name }})</label>
-                <textarea
+                <TinyMceEditor
                     v-model="form.address[loc.code]"
-                    rows="3"
-                    class="mt-1 w-full rounded border px-3 py-2 text-sm"
+                    class="mt-2"
+                    variant="basic"
+                    :min-height="140"
                 />
                 <p v-if="form.errors['address.' + loc.code]" class="mt-1 text-sm text-red-600">{{ form.errors['address.' + loc.code] }}</p>
             </div>

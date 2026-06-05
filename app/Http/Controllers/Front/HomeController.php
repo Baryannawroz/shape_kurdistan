@@ -7,6 +7,10 @@ use App\Models\Project;
 use App\Models\Service;
 use App\Models\TeamMember;
 use App\Models\Testimonial;
+use App\Support\AdminEditLinks;
+use App\Support\HomeSections;
+use App\Support\PageSeo;
+use App\Support\RichContent;
 use App\Support\SiteSettings;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -50,6 +54,9 @@ class HomeController extends Controller
 
         $siteName = (string) (SiteSettings::get('general.site_name_'.app()->getLocale()) ?? config('app.name'));
 
+        $user = request()->user();
+        $canManage = AdminEditLinks::canManage($user);
+
         $jsonLd = json_encode([
             '@context' => 'https://schema.org',
             '@type' => 'Organization',
@@ -58,10 +65,15 @@ class HomeController extends Controller
         ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
 
         return Inertia::render('Front/Home', [
+            'adminEdits' => AdminEditLinks::build($user, AdminEditLinks::forHome()),
+            'homeSettings' => $canManage ? AdminEditLinks::homeSettingsPayload() : null,
+            'localeMeta' => $canManage ? AdminEditLinks::localeMeta() : [],
+            'sections' => HomeSections::forLocale(),
+            'seo' => PageSeo::resolve('home', $siteName, SiteSettings::get('general.about_excerpt_'.app()->getLocale()) ?? ''),
             'jsonLd' => $jsonLd,
             'hero' => [
                 'headline' => SiteSettings::get('appearance.hero_headline_'.app()->getLocale()),
-                'subheadline' => SiteSettings::get('appearance.hero_subheadline_'.app()->getLocale()),
+                'subheadline' => RichContent::expand(SiteSettings::get('appearance.hero_subheadline_'.app()->getLocale()) ?? ''),
                 'primaryCta' => SiteSettings::get('appearance.hero_primary_cta_'.app()->getLocale()),
                 'secondaryCta' => SiteSettings::get('appearance.hero_secondary_cta_'.app()->getLocale()),
                 'image' => SiteSettings::get('appearance.hero_image') ? Storage::url(SiteSettings::get('appearance.hero_image')) : null,

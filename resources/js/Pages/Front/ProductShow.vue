@@ -1,12 +1,14 @@
 <script setup>
-import { Head, Link, usePage } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
+import SeoHead from '@/Components/Front/SeoHead.vue';
 import PageHero from '@/Components/Front/PageHero.vue';
 import RichContent from '@/Components/Front/RichContent.vue';
 import { r } from '@/lib/route.js';
 
 defineProps({
     product: Object,
+    seo: { type: Object, default: () => ({}) },
 });
 
 const page = usePage();
@@ -14,8 +16,8 @@ const locale = page.props.locale;
 </script>
 
 <template>
-    <AppLayout :title="product.title">
-        <Head :title="product.title" />
+    <AppLayout :title="seo.title || product.title">
+        <SeoHead :seo="seo" />
         <PageHero
             :eyebrow="product.category?.title"
             :title="product.title"

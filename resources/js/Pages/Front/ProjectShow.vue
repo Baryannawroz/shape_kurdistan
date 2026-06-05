@@ -1,5 +1,6 @@
 <script setup>
-import { Head, Link, usePage } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
+import SeoHead from '@/Components/Front/SeoHead.vue';
 import { ref } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import PageHero from '@/Components/Front/PageHero.vue';
@@ -10,6 +11,7 @@ import { r } from '@/lib/route.js';
 defineProps({
     project: Object,
     related: Array,
+    seo: { type: Object, default: () => ({}) },
 });
 
 const page = usePage();
@@ -38,8 +40,8 @@ function closeLightbox() {
 </script>
 
 <template>
-    <AppLayout :title="project.title">
-        <Head :title="project.title" />
+    <AppLayout :title="seo.title || project.title">
+        <SeoHead :seo="seo" />
         <PageHero
             :title="project.title"
             :lead="`${project.client} · ${project.year}`"

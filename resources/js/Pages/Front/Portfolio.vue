@@ -1,16 +1,24 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import { PhotoIcon } from '@heroicons/vue/24/outline';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import PageHero from '@/Components/Front/PageHero.vue';
+import PageInlineEdit from '@/Components/Admin/PageInlineEdit.vue';
+import PageSeoInlineEdit from '@/Components/Admin/PageSeoInlineEdit.vue';
+import SeoHead from '@/Components/Front/SeoHead.vue';
 import ImageLightbox from '@/Components/Front/ImageLightbox.vue';
 import { r } from '@/lib/route.js';
 import { usePage } from '@inertiajs/vue3';
 
 const props = defineProps({
+    pageContent: { type: Object, default: null },
+    localeMeta: { type: Array, default: () => [] },
+    intro: { type: Object, default: () => ({}) },
     projects: Array,
     categories: Array,
+    seo: { type: Object, default: () => ({}) },
+    seoSettings: { type: Object, default: null },
 });
 
 const page = usePage();
@@ -53,9 +61,9 @@ function closeLightbox() {
 </script>
 
 <template>
-    <AppLayout title="Portfolio">
-        <Head title="Portfolio" />
-        <PageHero eyebrow="Selected work" title="Portfolio" lead="Filter by discipline — click an image to preview it full size.">
+    <AppLayout :title="seo.title || 'Portfolio'">
+        <SeoHead :seo="seo" />
+        <PageHero :eyebrow="intro.eyebrow" :title="intro.title" :lead="intro.lead" :lead-html="intro.leadHtml">
             <div class="mt-8 flex flex-wrap gap-2">
                 <button
                     type="button"
@@ -79,6 +87,19 @@ function closeLightbox() {
         </PageHero>
 
         <section class="mx-auto max-w-6xl px-4 py-14 lg:px-8">
+            <PageSeoInlineEdit
+                v-if="seoSettings"
+                page-key="portfolio"
+                :seo-settings="seoSettings"
+                :locale-meta="localeMeta"
+            />
+            <PageInlineEdit
+                v-if="pageContent"
+                :page="pageContent"
+                :locale-meta="localeMeta"
+                label="Edit portfolio page"
+                content-variant="basic"
+            />
             <div class="columns-1 gap-6 space-y-6 md:columns-2 lg:columns-3">
                 <article
                     v-for="p in filtered"

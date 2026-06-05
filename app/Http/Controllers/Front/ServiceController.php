@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Front\Concerns\LoadsPageIntro;
 use App\Models\Service;
 use App\Models\ServiceTranslation;
+use App\Support\AdminEditLinks;
+use App\Support\PageSeo;
 use App\Support\RichContent;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -12,8 +15,16 @@ use Inertia\Response;
 
 class ServiceController extends Controller
 {
+    use LoadsPageIntro;
+
     public function index(): Response
     {
+        $pageIntro = $this->loadPageIntro('services', [
+            'eyebrow' => 'Capabilities',
+            'title' => __('Services'),
+            'lead' => 'Explore how we help teams ship — from strategy and UX to engineering, performance, and analytics.',
+        ]);
+
         $services = Service::query()
             ->where('is_active', true)
             ->with('translations')
@@ -29,6 +40,12 @@ class ServiceController extends Controller
             ]);
 
         return Inertia::render('Front/Services', [
+            'adminEdits' => AdminEditLinks::build(request()->user(), AdminEditLinks::forServicesIndex()),
+            'seo' => PageSeo::resolve('services', __('Services'), $pageIntro['intro']['lead']),
+            'seoSettings' => AdminEditLinks::canManage(request()->user()) ? PageSeo::settingsPayload('services') : null,
+            'pageContent' => $pageIntro['pageContent'],
+            'localeMeta' => $pageIntro['localeMeta'],
+            'intro' => $pageIntro['intro'],
             'services' => $services,
         ]);
     }
@@ -45,6 +62,8 @@ class ServiceController extends Controller
         $t = $service->getTranslation();
 
         return Inertia::render('Front/ServiceShow', [
+            'adminEdits' => AdminEditLinks::build(request()->user(), AdminEditLinks::forServiceShow($service->id)),
+            'seo' => PageSeo::resolve('services', $t?->title ?? __('Services'), strip_tags($t?->description ?? '')),
             'service' => [
                 'id' => $service->id,
                 'title' => $t?->title,

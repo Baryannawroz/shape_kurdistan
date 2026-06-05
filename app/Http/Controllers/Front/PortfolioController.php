@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Front\Concerns\LoadsPageIntro;
 use App\Models\Project;
 use App\Models\ProjectTranslation;
+use App\Support\AdminEditLinks;
+use App\Support\PageSeo;
 use App\Support\RichContent;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -12,8 +15,16 @@ use Inertia\Response;
 
 class PortfolioController extends Controller
 {
+    use LoadsPageIntro;
+
     public function index(): Response
     {
+        $pageIntro = $this->loadPageIntro('portfolio', [
+            'eyebrow' => 'Selected work',
+            'title' => __('Portfolio'),
+            'lead' => 'Filter by discipline — click an image to preview it full size.',
+        ]);
+
         $projects = Project::query()
             ->where('is_active', true)
             ->with('translations')
@@ -40,6 +51,12 @@ class PortfolioController extends Controller
             ->all();
 
         return Inertia::render('Front/Portfolio', [
+            'adminEdits' => AdminEditLinks::build(request()->user(), AdminEditLinks::forPortfolioIndex()),
+            'seo' => PageSeo::resolve('portfolio', __('Portfolio'), $pageIntro['intro']['lead']),
+            'seoSettings' => AdminEditLinks::canManage(request()->user()) ? PageSeo::settingsPayload('portfolio') : null,
+            'pageContent' => $pageIntro['pageContent'],
+            'localeMeta' => $pageIntro['localeMeta'],
+            'intro' => $pageIntro['intro'],
             'projects' => $projects,
             'categories' => $categories,
         ]);
@@ -71,6 +88,8 @@ class PortfolioController extends Controller
             ]);
 
         return Inertia::render('Front/ProjectShow', [
+            'adminEdits' => AdminEditLinks::build(request()->user(), AdminEditLinks::forProjectShow($project->id)),
+            'seo' => PageSeo::resolve('portfolio', $t?->title ?? __('Portfolio'), strip_tags($t?->description ?? '')),
             'project' => [
                 'id' => $project->id,
                 'title' => $t?->title,

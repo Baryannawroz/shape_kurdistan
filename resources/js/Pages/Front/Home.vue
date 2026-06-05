@@ -14,11 +14,18 @@ import FaqAccordion from '@/Components/Front/FaqAccordion.vue';
 import CloverIcon from '@/Components/Front/CloverIcon.vue';
 import CloverDecor from '@/Components/Front/CloverDecor.vue';
 import CloverAsset from '@/Components/Front/CloverAsset.vue';
+import HomeInlineEdit from '@/Components/Admin/HomeInlineEdit.vue';
+import RichContent from '@/Components/Front/RichContent.vue';
+import SeoHead from '@/Components/Front/SeoHead.vue';
 import { r } from '@/lib/route.js';
 import { stripHtml } from '@/lib/stripHtml.js';
 
 const props = defineProps({
     jsonLd: { type: String, required: true },
+    homeSettings: { type: Object, default: null },
+    localeMeta: { type: Array, default: () => [] },
+    sections: { type: Object, default: () => ({}) },
+    seo: { type: Object, default: () => ({}) },
     hero: Object,
     stats: Object,
     services: Array,
@@ -155,7 +162,8 @@ const clientCompanies = computed(() =>
 </script>
 
 <template>
-    <AppLayout :title="siteTitle">
+    <AppLayout :title="seo.title || siteTitle">
+        <SeoHead :seo="seo" />
         <Head>
             <component :is="'script'" type="application/ld+json" v-text="props.jsonLd" />
         </Head>
@@ -164,6 +172,11 @@ const clientCompanies = computed(() =>
         <section class="relative overflow-hidden px-4 pb-16 pt-10 md:pb-24 md:pt-16 lg:px-8">
             <CloverDecor variant="hero" />
             <div class="relative mx-auto max-w-6xl">
+                <HomeInlineEdit
+                    v-if="homeSettings"
+                    :home-settings="homeSettings"
+                    :locale-meta="localeMeta"
+                />
                 <div class="mx-auto max-w-3xl text-center">
                     <p class="inline-flex items-center gap-2 rounded-full border border-clover-border bg-white px-4 py-1.5 text-xs font-semibold text-clover-muted shadow-sm">
                         <CloverIcon name="sparkles" size="sm" variant="soft" />
@@ -172,9 +185,11 @@ const clientCompanies = computed(() =>
                     <h1 class="mt-6 text-balance text-4xl font-semibold tracking-tight text-clover-ink md:text-5xl lg:text-[3.5rem] lg:leading-[1.08]">
                         {{ hero.headline }}
                     </h1>
-                    <p class="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-clover-muted">
-                        {{ hero.subheadline }}
-                    </p>
+                    <RichContent
+                        v-if="hero.subheadline"
+                        :html="hero.subheadline"
+                        prose-class="prose prose-lg mx-auto mt-5 max-w-2xl text-clover-muted prose-headings:text-clover-ink prose-a:text-primary prose-strong:text-clover-ink"
+                    />
                     <div class="mt-9 flex flex-wrap justify-center gap-3">
                         <Link :href="r('site.contact', { locale })" class="clover-btn-primary">
                             {{ hero.primaryCta || 'Get Started' }}
@@ -218,14 +233,46 @@ const clientCompanies = computed(() =>
             </div>
         </section>
 
+        <!-- Vision & Mission -->
+        <section v-if="sections.vision?.title || sections.mission?.title" class="border-b border-clover-border bg-white px-4 py-20 lg:px-8 lg:py-28">
+            <div class="mx-auto grid max-w-6xl gap-12 lg:grid-cols-2">
+                <article v-if="sections.vision?.title">
+                    <SectionHeader
+                        :centered="false"
+                        :eyebrow="sections.vision.eyebrow"
+                        :title="sections.vision.title"
+                        :lead-html="sections.vision.lead"
+                    />
+                    <RichContent
+                        v-if="sections.vision.body"
+                        :html="sections.vision.body"
+                        prose-class="prose prose-lg mt-6 max-w-none text-clover-muted prose-headings:text-clover-ink"
+                    />
+                </article>
+                <article v-if="sections.mission?.title">
+                    <SectionHeader
+                        :centered="false"
+                        :eyebrow="sections.mission.eyebrow"
+                        :title="sections.mission.title"
+                        :lead-html="sections.mission.lead"
+                    />
+                    <RichContent
+                        v-if="sections.mission.body"
+                        :html="sections.mission.body"
+                        prose-class="prose prose-lg mt-6 max-w-none text-clover-muted prose-headings:text-clover-ink"
+                    />
+                </article>
+            </div>
+        </section>
+
         <!-- Why choose us -->
         <section class="relative px-4 py-20 lg:px-8 lg:py-28">
             <CloverDecor variant="section" />
             <div class="relative mx-auto max-w-6xl">
                 <SectionHeader
-                    eyebrow="Our advantages"
-                    title="Why choose us?"
-                    lead="Focused engagements from discovery through launch — clear milestones, shared ownership, and measurable outcomes."
+                    :eyebrow="sections.why_choose?.eyebrow"
+                    :title="sections.why_choose?.title || 'Why choose us?'"
+                    :lead-html="sections.why_choose?.lead"
                 />
                 <div v-if="featuredServices.length" class="mt-14 grid gap-6 md:grid-cols-3">
                     <article
@@ -248,9 +295,9 @@ const clientCompanies = computed(() =>
             <CloverDecor variant="dots" />
             <div class="relative mx-auto max-w-6xl">
                 <SectionHeader
-                    eyebrow="Benefits"
-                    title="Why we shine"
-                    lead="Everything you need to ship with confidence — strategy, design, engineering, and support in one partnership."
+                    :eyebrow="sections.benefits?.eyebrow"
+                    :title="sections.benefits?.title || 'Why we shine'"
+                    :lead-html="sections.benefits?.lead"
                 />
                 <div v-if="benefitServices.length" class="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                     <article v-for="(s, index) in benefitServices" :key="s.id" class="clover-card p-6">
@@ -266,9 +313,9 @@ const clientCompanies = computed(() =>
         <section class="px-4 py-20 lg:px-8 lg:py-28">
             <div class="mx-auto max-w-6xl">
                 <SectionHeader
-                    eyebrow="Process"
-                    title="Our approach"
-                    lead="A streamlined process with clear steps and full transparency from kickoff to launch and beyond."
+                    :eyebrow="sections.process?.eyebrow"
+                    :title="sections.process?.title || 'Our approach'"
+                    :lead-html="sections.process?.lead"
                 />
                 <div class="mt-14 grid gap-6 md:grid-cols-2">
                     <article v-for="step in processSteps" :key="step.step" class="clover-card p-7">
@@ -333,9 +380,9 @@ const clientCompanies = computed(() =>
         <section v-if="projects?.length" class="px-4 py-20 lg:px-8 lg:py-28">
             <div class="mx-auto max-w-6xl">
                 <SectionHeader
-                    eyebrow="Portfolio"
-                    title="Featured work"
-                    lead="Case studies and launches we are proud to have shaped end-to-end."
+                    :eyebrow="sections.portfolio?.eyebrow"
+                    :title="sections.portfolio?.title || 'Featured work'"
+                    :lead-html="sections.portfolio?.lead"
                 />
                 <div class="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     <Link
@@ -367,9 +414,9 @@ const clientCompanies = computed(() =>
             <CloverDecor variant="dots" />
             <div class="relative mx-auto max-w-6xl">
                 <SectionHeader
-                    eyebrow="Pricing"
-                    title="Choose the perfect plan"
-                    lead="Flexible pricing aligned with where your business stands today and where it is headed."
+                    :eyebrow="sections.pricing?.eyebrow"
+                    :title="sections.pricing?.title || 'Choose the perfect plan'"
+                    :lead-html="sections.pricing?.lead"
                 />
                 <div class="mt-14 grid gap-6 lg:grid-cols-3">
                     <article
@@ -406,9 +453,9 @@ const clientCompanies = computed(() =>
         <section class="px-4 py-20 lg:px-8 lg:py-28">
             <div class="mx-auto max-w-3xl">
                 <SectionHeader
-                    eyebrow="FAQ"
-                    title="Got a quick question?"
-                    lead="We are here to help you make the right decision. Explore common questions below."
+                    :eyebrow="sections.faq?.eyebrow"
+                    :title="sections.faq?.title || 'Got a quick question?'"
+                    :lead-html="sections.faq?.lead"
                 />
                 <FaqAccordion :items="faqItems" class="mt-12" />
             </div>
@@ -418,9 +465,9 @@ const clientCompanies = computed(() =>
         <section v-if="testimonials?.length" class="border-y border-clover-border bg-white px-4 py-20 lg:px-8 lg:py-28">
             <div class="mx-auto max-w-6xl">
                 <SectionHeader
-                    eyebrow="Reviews"
-                    title="Our valued clients"
-                    lead="Voices from teams we have shipped with."
+                    :eyebrow="sections.reviews?.eyebrow"
+                    :title="sections.reviews?.title || 'Our valued clients'"
+                    :lead-html="sections.reviews?.lead"
                 />
                 <div class="mt-12 flex gap-4 overflow-x-auto pb-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                     <figure v-for="t in testimonials" :key="t.id" class="clover-review-card">
@@ -461,7 +508,10 @@ const clientCompanies = computed(() =>
         <!-- Team -->
         <section v-if="team?.length" class="border-t border-clover-border px-4 py-20 lg:px-8 lg:py-28">
             <div class="mx-auto max-w-6xl">
-                <SectionHeader eyebrow="Team" title="The people behind the work" />
+                <SectionHeader
+                    :eyebrow="sections.team?.eyebrow"
+                    :title="sections.team?.title || 'The people behind the work'"
+                />
                 <div class="mt-14 grid gap-6 sm:grid-cols-2 md:grid-cols-4">
                     <div v-for="m in team" :key="m.id" class="clover-card p-6 text-center">
                         <div class="mx-auto h-24 w-24 overflow-hidden rounded-full bg-clover-bg ring-2 ring-white">
@@ -481,9 +531,9 @@ const clientCompanies = computed(() =>
                     <div>
                         <SectionHeader
                             :centered="false"
-                            eyebrow="Key takeaways"
-                            title="Build with clarity and confidence"
-                            lead="Partner with a team that combines strategy, design, and engineering — tailored to your goals."
+                            :eyebrow="sections.takeaways?.eyebrow"
+                            :title="sections.takeaways?.title || 'Build with clarity and confidence'"
+                            :lead-html="sections.takeaways?.lead"
                         />
                         <Link :href="r('site.contact', { locale })" class="clover-btn-green mt-8">
                             Get Started
@@ -507,9 +557,14 @@ const clientCompanies = computed(() =>
                     {{ String(siteTitle).charAt(0) }}
                 </p>
                 <h2 class="relative mx-auto mt-6 max-w-2xl text-3xl font-semibold tracking-tight md:text-4xl">
-                    Start building something great today
+                    {{ sections.final_cta?.title || 'Start building something great today' }}
                 </h2>
-                <p class="relative mx-auto mt-4 max-w-xl text-base text-white/70">
+                <RichContent
+                    v-if="sections.final_cta?.lead"
+                    :html="sections.final_cta.lead"
+                    prose-class="prose prose-base relative mx-auto mt-4 max-w-xl text-white/70 prose-invert prose-p:text-white/70"
+                />
+                <p v-else class="relative mx-auto mt-4 max-w-xl text-base text-white/70">
                     Tell us about your project — we will respond quickly with next steps and a tailored proposal.
                 </p>
                 <Link :href="r('site.contact', { locale })" class="relative clover-btn-green mt-8 bg-primary hover:bg-primary-dark">

@@ -1,27 +1,51 @@
 <script setup>
-import { Head, Link, usePage } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 import { ArrowRightIcon } from '@heroicons/vue/24/outline';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import PageHero from '@/Components/Front/PageHero.vue';
+import PageInlineEdit from '@/Components/Admin/PageInlineEdit.vue';
+import PageSeoInlineEdit from '@/Components/Admin/PageSeoInlineEdit.vue';
+import SeoHead from '@/Components/Front/SeoHead.vue';
 import CloverIcon from '@/Components/Front/CloverIcon.vue';
 import { r } from '@/lib/route.js';
 import { stripHtml } from '@/lib/stripHtml.js';
 
-defineProps({ services: Array });
+defineProps({
+    pageContent: { type: Object, default: null },
+    localeMeta: { type: Array, default: () => [] },
+    intro: { type: Object, default: () => ({}) },
+    services: Array,
+    seo: { type: Object, default: () => ({}) },
+    seoSettings: { type: Object, default: null },
+});
 
 const page = usePage();
 const locale = page.props.locale;
 </script>
 
 <template>
-    <AppLayout title="Services">
-        <Head title="Services" />
+    <AppLayout :title="seo.title || 'Services'">
+        <SeoHead :seo="seo" />
         <PageHero
-            eyebrow="Capabilities"
-            title="Services"
-            lead="Explore how we help teams ship — from strategy and UX to engineering, performance, and analytics."
+            :eyebrow="intro.eyebrow"
+            :title="intro.title"
+            :lead="intro.lead"
+            :lead-html="intro.leadHtml"
         />
         <section class="mx-auto max-w-6xl px-4 py-16 lg:px-8">
+            <PageSeoInlineEdit
+                v-if="seoSettings"
+                page-key="services"
+                :seo-settings="seoSettings"
+                :locale-meta="localeMeta"
+            />
+            <PageInlineEdit
+                v-if="pageContent"
+                :page="pageContent"
+                :locale-meta="localeMeta"
+                label="Edit services page"
+                content-variant="basic"
+            />
             <div v-if="! services?.length" class="clover-card p-12 text-center text-clover-muted">
                 No services are published for this language yet.
             </div>

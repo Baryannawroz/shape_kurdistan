@@ -1,11 +1,22 @@
 <script setup>
-import { Head } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import PageHero from '@/Components/Front/PageHero.vue';
 import ContactForm from '@/Components/Front/ContactForm.vue';
+import ContactInlineEdit from '@/Components/Admin/ContactInlineEdit.vue';
+import RichContent from '@/Components/Front/RichContent.vue';
+import PageSeoInlineEdit from '@/Components/Admin/PageSeoInlineEdit.vue';
+import SeoHead from '@/Components/Front/SeoHead.vue';
 
 defineProps({
     mapsEmbedUrl: String,
+    contactSettings: {
+        type: Object,
+        default: null,
+    },
+    localeMeta: {
+        type: Array,
+        default: () => [],
+    },
     contact: {
         type: Object,
         default: () => ({
@@ -14,18 +25,31 @@ defineProps({
             address: null,
         }),
     },
+    seo: { type: Object, default: () => ({}) },
+    seoSettings: { type: Object, default: null },
 });
 </script>
 
 <template>
-    <AppLayout title="Contact">
-        <Head title="Contact" />
+    <AppLayout :title="seo.title || 'Contact'">
+        <SeoHead :seo="seo" />
         <PageHero
             eyebrow="Let's talk"
             title="Contact"
             lead="Tell us about your project — we will respond as soon as we can."
         />
         <section class="mx-auto max-w-6xl px-4 py-16 lg:px-8">
+            <PageSeoInlineEdit
+                v-if="seoSettings"
+                page-key="contact"
+                :seo-settings="seoSettings"
+                :locale-meta="localeMeta"
+            />
+            <ContactInlineEdit
+                v-if="contactSettings"
+                :contact-settings="contactSettings"
+                :locale-meta="localeMeta"
+            />
             <div class="grid gap-12 lg:grid-cols-2 lg:gap-16">
                 <div>
                     <h2 class="text-lg font-semibold text-clover-ink">Details</h2>
@@ -52,7 +76,12 @@ defineProps({
                         </div>
                         <div v-if="contact.address">
                             <dt class="text-xs font-semibold uppercase tracking-wide text-clover-muted">Address</dt>
-                            <dd class="mt-1 whitespace-pre-line">{{ contact.address }}</dd>
+                            <dd class="mt-1">
+                                <RichContent
+                                    :html="contact.address"
+                                    prose-class="prose prose-sm max-w-none text-clover-muted prose-strong:text-clover-ink"
+                                />
+                            </dd>
                         </div>
                     </dl>
                     <div v-if="mapsEmbedUrl" class="mt-10 aspect-video overflow-hidden rounded-clover border border-clover-border bg-clover-bg shadow-inner">

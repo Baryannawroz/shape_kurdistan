@@ -1,11 +1,13 @@
 <script setup>
 import { Link } from '@inertiajs/vue3';
 import { ArrowLeftIcon } from '@heroicons/vue/24/outline';
+import RichContent from '@/Components/Front/RichContent.vue';
 
 defineProps({
     eyebrow: { type: String, default: '' },
     title: { type: String, required: true },
     lead: { type: String, default: '' },
+    leadHtml: { type: String, default: '' },
     backHref: { type: String, default: '' },
     backLabel: { type: String, default: '' },
 });
@@ -25,7 +27,12 @@ defineProps({
             </Link>
             <p v-if="eyebrow" class="clover-eyebrow">{{ eyebrow }}</p>
             <h1 class="mt-3 text-4xl font-semibold tracking-tight text-clover-ink md:text-5xl">{{ title }}</h1>
-            <p v-if="lead" class="mt-4 max-w-2xl text-lg leading-relaxed text-clover-muted">{{ lead }}</p>
+            <RichContent
+                v-if="leadHtml"
+                :html="leadHtml"
+                prose-class="prose prose-lg mt-4 max-w-2xl text-clover-muted prose-headings:text-clover-ink prose-a:text-primary prose-strong:text-clover-ink"
+            />
+            <p v-else-if="lead" class="mt-4 max-w-2xl text-lg leading-relaxed text-clover-muted">{{ lead }}</p>
             <slot />
         </div>
     </section>

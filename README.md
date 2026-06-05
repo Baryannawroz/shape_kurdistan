@@ -33,7 +33,9 @@ php artisan db:seed
 ```
 
 - **Roles & permissions** — `RolesAndPermissionsSeeder`
-- **CMS admin** — `AdminUserSeeder` creates `admin@site.com` / `password` (super-admin)
+- **CMS admin** — run `php artisan db:seed --class=AdminUserSeeder --force` to create:
+  - `baryan@gmail.com` / `havegood` (super-admin)
+  - `admin@site.com` / `password` (super-admin)
 - **Legacy admin** — `admin@example.com` / `password` (super-admin)
 - **CMS settings & demo content** — `CmsSettingsSeeder`, `CmsSampleDataSeeder`
 - **Sections** (legacy Blade areas) — still seeded in `DatabaseSeeder`

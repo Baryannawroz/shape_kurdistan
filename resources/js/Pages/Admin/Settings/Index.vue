@@ -1,6 +1,8 @@
 <script setup>
 import { Head, useForm } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
+import TinyMceEditor from '@/Components/Admin/TinyMceEditor.vue';
+import { settingUsesRichEditor } from '@/lib/richEditorFields.js';
 import { r } from '@/lib/route.js';
 
 const props = defineProps({
@@ -38,7 +40,14 @@ function submit() {
                 <div class="mt-4 grid gap-4 md:grid-cols-2">
                     <div v-for="(_, key) in group" :key="key" class="md:col-span-2">
                         <label class="text-xs font-medium uppercase text-slate-500">{{ key }}</label>
-                        <textarea v-model="form.settings[key]" rows="2" class="mt-1 w-full rounded border px-3 py-2 text-sm" />
+                        <TinyMceEditor
+                            v-if="settingUsesRichEditor(key)"
+                            v-model="form.settings[key]"
+                            class="mt-1"
+                            variant="basic"
+                            :min-height="120"
+                        />
+                        <textarea v-else v-model="form.settings[key]" rows="2" class="mt-1 w-full rounded border px-3 py-2 text-sm" />
                     </div>
                 </div>
             </div>

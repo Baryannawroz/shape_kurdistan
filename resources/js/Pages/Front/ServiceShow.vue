@@ -1,20 +1,24 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
+import SeoHead from '@/Components/Front/SeoHead.vue';
 import PageHero from '@/Components/Front/PageHero.vue';
 import RichContent from '@/Components/Front/RichContent.vue';
 import { r } from '@/lib/route.js';
 import { usePage } from '@inertiajs/vue3';
 
-defineProps({ service: Object });
+defineProps({
+    service: Object,
+    seo: { type: Object, default: () => ({}) },
+});
 
 const page = usePage();
 const locale = page.props.locale;
 </script>
 
 <template>
-    <AppLayout :title="service.title">
-        <Head :title="service.title" />
+    <AppLayout :title="seo.title || service.title">
+        <SeoHead :seo="seo" />
         <PageHero
             :title="service.title"
             back-label="Services"

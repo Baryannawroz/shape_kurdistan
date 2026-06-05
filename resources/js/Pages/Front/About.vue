@@ -1,25 +1,54 @@
 <script setup>
-import { Head } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import PageHero from '@/Components/Front/PageHero.vue';
 import RichContent from '@/Components/Front/RichContent.vue';
+import PageInlineEdit from '@/Components/Admin/PageInlineEdit.vue';
+import PageSeoInlineEdit from '@/Components/Admin/PageSeoInlineEdit.vue';
+import SeoHead from '@/Components/Front/SeoHead.vue';
 
 defineProps({
+    pageContent: {
+        type: Object,
+        default: null,
+    },
+    localeMeta: {
+        type: Array,
+        default: () => [],
+    },
+    intro: {
+        type: Object,
+        default: () => ({}),
+    },
     title: String,
     content: String,
     team: Array,
+    seo: { type: Object, default: () => ({}) },
+    seoSettings: { type: Object, default: null },
 });
 </script>
 
 <template>
-    <AppLayout :title="title">
-        <Head :title="title" />
+    <AppLayout :title="seo.title || title">
+        <SeoHead :seo="seo" />
         <PageHero
-            eyebrow="About"
-            :title="title"
-            lead="Our story, craft, and how we partner with teams like yours."
+            :eyebrow="intro?.eyebrow || 'About'"
+            :title="intro?.title || title"
+            :lead="intro?.lead"
+            :lead-html="intro?.leadHtml"
         />
         <section class="mx-auto max-w-4xl px-4 py-14 lg:px-8">
+            <PageSeoInlineEdit
+                v-if="seoSettings"
+                page-key="about"
+                :seo-settings="seoSettings"
+                :locale-meta="localeMeta"
+            />
+            <PageInlineEdit
+                v-if="pageContent"
+                :page="pageContent"
+                :locale-meta="localeMeta"
+                label="Edit about page"
+            />
             <RichContent
                 :html="content"
                 prose-class="prose prose-lg max-w-none text-clover-muted prose-headings:text-clover-ink prose-a:text-primary"

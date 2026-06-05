@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Front;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreSiteContactRequest;
 use App\Models\ContactMessage;
+use App\Support\AdminEditLinks;
+use App\Support\PageSeo;
+use App\Support\RichContent;
 use App\Support\SiteSettings;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
@@ -16,13 +19,21 @@ class ContactController extends Controller
     {
         $locale = app()->getLocale();
 
+        $user = request()->user();
+        $canManage = AdminEditLinks::canManage($user);
+
         return Inertia::render('Front/Contact', [
+            'adminEdits' => AdminEditLinks::build($user, AdminEditLinks::forContact()),
+            'seo' => PageSeo::resolve('contact', __('Contact'), __('Get in touch with our team.')),
+            'seoSettings' => $canManage ? PageSeo::settingsPayload('contact') : null,
             'mapsEmbedUrl' => SiteSettings::get('contact.maps_embed_url'),
             'contact' => [
                 'phone' => SiteSettings::get('contact.phone'),
                 'email' => SiteSettings::get('contact.email'),
-                'address' => SiteSettings::get('contact.address_'.$locale),
+                'address' => RichContent::expand(SiteSettings::get('contact.address_'.$locale) ?? ''),
             ],
+            'contactSettings' => $canManage ? AdminEditLinks::contactSettingsPayload() : null,
+            'localeMeta' => $canManage ? AdminEditLinks::localeMeta() : [],
         ]);
     }
 

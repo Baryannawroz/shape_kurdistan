@@ -1,5 +1,6 @@
 <script setup>
 import { Link, usePage } from '@inertiajs/vue3';
+import RichContent from '@/Components/Front/RichContent.vue';
 import { r } from '@/lib/route.js';
 
 const page = usePage();
@@ -23,9 +24,11 @@ const navLinks = page.props.navLinks ?? [];
                         </span>
                         <span class="text-lg font-semibold text-clover-ink">{{ page.props.siteName }}</span>
                     </Link>
-                    <p v-if="footer.address" class="mt-4 max-w-sm text-sm leading-relaxed text-clover-muted">
-                        {{ footer.address }}
-                    </p>
+                    <RichContent
+                        v-if="footer.address"
+                        :html="footer.address"
+                        prose-class="prose prose-sm mt-4 max-w-sm text-clover-muted prose-strong:text-clover-ink"
+                    />
                 </div>
 
                 <div>

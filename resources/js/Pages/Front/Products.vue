@@ -1,15 +1,23 @@
 <script setup>
-import { Head, Link, usePage } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 import { ShoppingBagIcon } from '@heroicons/vue/24/outline';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import PageHero from '@/Components/Front/PageHero.vue';
+import PageInlineEdit from '@/Components/Admin/PageInlineEdit.vue';
+import PageSeoInlineEdit from '@/Components/Admin/PageSeoInlineEdit.vue';
+import SeoHead from '@/Components/Front/SeoHead.vue';
 import { stripHtml } from '@/lib/stripHtml.js';
 import { r } from '@/lib/route.js';
 
 defineProps({
+    pageContent: { type: Object, default: null },
+    localeMeta: { type: Array, default: () => [] },
+    intro: { type: Object, default: () => ({}) },
     categories: Array,
     products: Array,
     activeCategorySlug: { type: String, default: null },
+    seo: { type: Object, default: () => ({}) },
+    seoSettings: { type: Object, default: null },
 });
 
 const page = usePage();
@@ -17,9 +25,9 @@ const locale = page.props.locale;
 </script>
 
 <template>
-    <AppLayout title="Products">
-        <Head title="Products" />
-        <PageHero eyebrow="Catalog" title="Products" lead="Browse by category or explore the full catalog.">
+    <AppLayout :title="seo.title || 'Products'">
+        <SeoHead :seo="seo" />
+        <PageHero :eyebrow="intro.eyebrow" :title="intro.title" :lead="intro.lead" :lead-html="intro.leadHtml">
             <div class="mt-8 flex flex-wrap gap-2">
                 <Link
                     :href="r('site.products', { locale })"
@@ -40,6 +48,19 @@ const locale = page.props.locale;
             </div>
         </PageHero>
         <section class="mx-auto max-w-6xl px-4 py-16 lg:px-8">
+            <PageSeoInlineEdit
+                v-if="seoSettings"
+                page-key="products"
+                :seo-settings="seoSettings"
+                :locale-meta="localeMeta"
+            />
+            <PageInlineEdit
+                v-if="pageContent"
+                :page="pageContent"
+                :locale-meta="localeMeta"
+                label="Edit products page"
+                content-variant="basic"
+            />
             <div v-if="! products.length" class="clover-card p-12 text-center text-clover-muted">
                 No products in this category yet.
             </div>

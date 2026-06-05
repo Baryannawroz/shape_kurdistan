@@ -1,11 +1,15 @@
 <script setup>
 import { Link, router, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
+import AdminPreviewBar from '@/Components/Admin/AdminPreviewBar.vue';
 import { r } from '@/lib/route.js';
 
 const page = usePage();
 const user = computed(() => page.props.auth?.user ?? null);
 const isSuperAdmin = computed(() => user.value?.roles?.includes('super-admin') ?? false);
+const hasAdminBar = computed(
+    () => page.props.canManageSite === true && (page.props.adminEdits?.length ?? 0) > 0,
+);
 
 function logout() {
     router.post(r('logout'));
@@ -46,8 +50,9 @@ function logout() {
                 </div>
             </div>
         </header>
-        <main class="mx-auto max-w-7xl px-4 py-8 lg:px-8">
+        <main class="mx-auto max-w-7xl px-4 py-8 lg:px-8" :class="{ 'pb-20': hasAdminBar }">
             <slot />
         </main>
+        <AdminPreviewBar />
     </div>
 </template>
