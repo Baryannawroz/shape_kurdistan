@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue';
+import legacy from '@vitejs/plugin-legacy';
 import { fileURLToPath, URL } from 'node:url';
 
 export default defineConfig({
@@ -53,6 +54,10 @@ export default defineConfig({
                     includeAbsolute: false,
                 },
             },
+        }),
+        legacy({
+            targets: ['defaults', 'not IE 11', 'chrome >= 49', 'safari >= 10', 'ios >= 10', 'android >= 5'],
+            additionalLegacyPolyfills: ['regenerator-runtime/runtime'],
         }),
     ],
     resolve: {
