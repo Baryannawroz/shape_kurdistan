@@ -45,4 +45,18 @@ class AdminUserSeederTest extends TestCase
             ->get(route('admin.dashboard'))
             ->assertOk();
     }
+
+    public function test_admin_dashboard_shell_uses_light_background_before_vue_mounts(): void
+    {
+        $this->seed(AdminUserSeeder::class);
+
+        $baryan = User::query()->where('email', 'baryan@gmail.com')->firstOrFail();
+
+        $this->actingAs($baryan)
+            ->get(route('admin.dashboard'))
+            ->assertOk()
+            ->assertSee('color-scheme" content="light"', false)
+            ->assertSee('bg-slate-100', false)
+            ->assertSee('id="app-loading-fallback"', false);
+    }
 }
