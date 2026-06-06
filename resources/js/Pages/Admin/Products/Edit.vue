@@ -2,7 +2,7 @@
 import { Head, useForm } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import TinyMceEditor from '@/Components/Admin/TinyMceEditor.vue';
-import { r } from '@/lib/route.js';
+import { r } from '@/lib/admin-route.js';
 
 const props = defineProps({
     product: Object,

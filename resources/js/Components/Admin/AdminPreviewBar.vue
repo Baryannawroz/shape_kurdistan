@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue';
 import { router, usePage } from '@inertiajs/vue3';
-import { r } from '@/lib/route.js';
+import { r } from '@/lib/admin-route.js';
 
 const page = usePage();
 

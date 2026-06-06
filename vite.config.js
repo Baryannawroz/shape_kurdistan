@@ -8,18 +8,28 @@ export default defineConfig({
         rollupOptions: {
             output: {
                 manualChunks(id) {
-                    if (id.includes('node_modules')) {
-                        if (id.includes('@tinymce')) {
-                            return 'vendor-tinymce';
-                        }
+                    if (! id.includes('node_modules')) {
+                        return undefined;
+                    }
 
-                        if (id.includes('@heroicons')) {
-                            return 'vendor-icons';
-                        }
+                    if (id.includes('@tinymce')) {
+                        return 'vendor-tinymce';
+                    }
 
-                        if (id.includes('vue') || id.includes('@inertiajs') || id.includes('ziggy-js')) {
-                            return 'vendor-app';
-                        }
+                    if (id.includes('@heroicons')) {
+                        return 'vendor-icons';
+                    }
+
+                    if (id.includes('vuedraggable')) {
+                        return 'vendor-draggable';
+                    }
+
+                    if (id.includes('ziggy-js')) {
+                        return 'vendor-ziggy';
+                    }
+
+                    if (id.includes('vue') || id.includes('@inertiajs') || id.includes('@vue')) {
+                        return 'vendor-vue';
                     }
                 },
             },
@@ -27,7 +37,13 @@ export default defineConfig({
     },
     plugins: [
         laravel({
-            input: ['resources/css/app.css', 'resources/js/app.js'],
+            input: [
+                'resources/css/app.css',
+                'resources/js/app.js',
+                'resources/css/admin.css',
+                'resources/js/admin.js',
+                'resources/css/auth.css',
+            ],
             refresh: true,
         }),
         vue({

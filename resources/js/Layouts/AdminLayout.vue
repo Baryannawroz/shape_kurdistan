@@ -2,7 +2,7 @@
 import { Link, router, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import AdminPreviewBar from '@/Components/Admin/AdminPreviewBar.vue';
-import { r } from '@/lib/route.js';
+import { r } from '@/lib/admin-route.js';
 
 const page = usePage();
 const user = computed(() => page.props.auth?.user ?? null);

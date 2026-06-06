@@ -2,7 +2,7 @@
 import { Head, Link } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import SortableResourceList from '@/Components/Admin/SortableResourceList.vue';
-import { r } from '@/lib/route.js';
+import { r } from '@/lib/admin-route.js';
 
 defineProps({ products: Array });
 </script>

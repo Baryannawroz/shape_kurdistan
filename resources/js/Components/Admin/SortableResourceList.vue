@@ -2,7 +2,7 @@
 import { router } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
 import draggable from 'vuedraggable';
-import { r } from '@/lib/route.js';
+import { r } from '@/lib/admin-route.js';
 
 const props = defineProps({
     items: { type: Array, required: true },

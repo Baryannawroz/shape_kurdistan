@@ -56,7 +56,8 @@ class AdminUserSeederTest extends TestCase
             ->get(route('admin.dashboard'))
             ->assertOk()
             ->assertSee('color-scheme" content="light"', false)
-            ->assertSee('bg-slate-100', false)
+            ->assertSee('modulepreload', false)
+            ->assertSee('admin-', false)
             ->assertSee('id="app-loading-fallback"', false);
     }
 }

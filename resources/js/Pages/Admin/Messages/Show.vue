@@ -1,7 +1,7 @@
 <script setup>
 import { Head, Link, router } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import { r } from '@/lib/route.js';
+import { r } from '@/lib/admin-route.js';
 
 defineProps({ message: Object });
 

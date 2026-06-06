@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Support\AdminEditLinks;
+use App\Support\AdminRoutes;
 use App\Support\RichContent;
 use App\Support\SiteSettings;
 use Illuminate\Http\Request;
@@ -12,7 +13,10 @@ use Tighten\Ziggy\Ziggy;
 
 class HandleInertiaRequests extends Middleware
 {
-    protected $rootView = 'app';
+    public function rootView(Request $request): string
+    {
+        return $request->routeIs('admin.*') ? 'admin' : 'app';
+    }
 
     public function version(Request $request): ?string
     {
@@ -85,7 +89,14 @@ class HandleInertiaRequests extends Middleware
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),
             ],
-            'ziggy' => fn () => array_merge((new Ziggy)->toArray(), [
+            'adminRoutes' => function () use ($request, $isAdminArea) {
+                if ($isAdminArea || AdminEditLinks::canManage($request->user())) {
+                    return AdminRoutes::uriPatterns();
+                }
+
+                return [];
+            },
+            'ziggy' => $isAdminArea ? [] : fn () => array_merge((new Ziggy)->toArray(), [
                 'location' => $request->url(),
             ]),
         ];
