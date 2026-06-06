@@ -23,16 +23,19 @@ function showLoadFailure(message) {
     document.body.prepend(panel);
 }
 
-createInertiaApp({
-    resolve: (name) => {
-        const pages = import.meta.glob('./Pages/**/*.vue', { eager: true });
-        const page = pages[`./Pages/${name}.vue`];
+const pageModules = import.meta.glob('./Pages/**/*.vue');
 
-        if (! page) {
+createInertiaApp({
+    resolve: async (name) => {
+        const importPage = pageModules[`./Pages/${name}.vue`];
+
+        if (! importPage) {
             throw new Error(`Page not found: ${name}`);
         }
 
-        return page.default;
+        const module = await importPage();
+
+        return module.default;
     },
     setup({ el, App, props, plugin }) {
         try {
@@ -63,3 +66,15 @@ window.addEventListener('error', (event) => {
 router.on('navigate', () => mountHostedVideos());
 
 document.addEventListener('DOMContentLoaded', () => mountHostedVideos());
+
+const loadingTimeoutMs = 20_000;
+
+window.setTimeout(() => {
+    const fallback = document.getElementById('app-loading-fallback');
+
+    if (! fallback) {
+        return;
+    }
+
+    fallback.innerHTML = '<div style="max-width:24rem;text-align:center;line-height:1.5;"><p style="font-weight:600;color:#0f172a;">Still loading…</p><p style="margin-top:0.5rem;">This can happen on slow connections. Wait a little longer, or hard-refresh (Ctrl+F5).</p></div>';
+}, loadingTimeoutMs);

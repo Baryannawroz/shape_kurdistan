@@ -37,6 +37,7 @@ class HandleInertiaRequests extends Middleware
 
         $locale = app()->getLocale();
         $direction = $localesConfig[$locale]['dir'] ?? 'ltr';
+        $isAdminArea = $request->routeIs('admin.*');
 
         return [
             ...parent::share($request),
@@ -49,8 +50,8 @@ class HandleInertiaRequests extends Middleware
                 ] : null,
             ],
             'canManageSite' => fn () => AdminEditLinks::canManage($request->user()),
-            'adminEdits' => function () use ($request) {
-                if (! $request->routeIs('admin.*')) {
+            'adminEdits' => function () use ($request, $isAdminArea) {
+                if (! $isAdminArea) {
                     return [];
                 }
 
@@ -58,9 +59,9 @@ class HandleInertiaRequests extends Middleware
             },
             'locale' => $locale,
             'direction' => $direction,
-            'locales' => $localesConfig,
-            'siteName' => SiteSettings::get('general.site_name_'.$locale) ?? config('app.name'),
-            'navLinks' => [
+            'locales' => $isAdminArea ? [] : $localesConfig,
+            'siteName' => fn () => SiteSettings::get('general.site_name_'.$locale) ?? config('app.name'),
+            'navLinks' => $isAdminArea ? [] : [
                 ['label' => __('nav.home'), 'route' => 'site.home', 'params' => []],
                 ['label' => __('nav.about'), 'route' => 'site.about', 'params' => []],
                 ['label' => __('nav.services'), 'route' => 'site.services', 'params' => []],
@@ -68,12 +69,12 @@ class HandleInertiaRequests extends Middleware
                 ['label' => __('nav.portfolio'), 'route' => 'site.portfolio', 'params' => []],
                 ['label' => __('nav.contact'), 'route' => 'site.contact', 'params' => []],
             ],
-            'footerData' => [
+            'footerData' => $isAdminArea ? [] : fn () => [
                 'address' => RichContent::expand(SiteSettings::get('contact.address_'.$locale) ?? ''),
                 'phone' => SiteSettings::get('contact.phone'),
                 'email' => SiteSettings::get('contact.email'),
             ],
-            'socialLinks' => [
+            'socialLinks' => $isAdminArea ? [] : fn () => [
                 'facebook' => SiteSettings::get('social.facebook'),
                 'twitter' => SiteSettings::get('social.twitter'),
                 'instagram' => SiteSettings::get('social.instagram'),
