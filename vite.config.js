@@ -1,11 +1,12 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue';
-import legacy from '@vitejs/plugin-legacy';
 import { fileURLToPath, URL } from 'node:url';
 
 export default defineConfig({
     build: {
+        target: ['es2015', 'chrome63', 'safari11.1', 'firefox60', 'edge79'],
+        cssTarget: ['chrome63', 'safari11.1'],
         rollupOptions: {
             output: {
                 manualChunks(id) {
@@ -54,10 +55,6 @@ export default defineConfig({
                     includeAbsolute: false,
                 },
             },
-        }),
-        legacy({
-            targets: ['defaults', 'not IE 11', 'chrome >= 49', 'safari >= 10', 'ios >= 10', 'android >= 5'],
-            additionalLegacyPolyfills: ['regenerator-runtime/runtime'],
         }),
     ],
     resolve: {
